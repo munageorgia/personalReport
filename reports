@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MUNA Personal Development Report</title>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   RESET & VARIABLES
+   ═══════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c1520;--surface:#141e2d;--surface2:#1a2840;--surface3:#223352;
+  --gold:#d4a843;--gold2:#c49530;--gold-lo:rgba(212,168,67,.12);
+  --text:#c8d6e5;--text2:#8a9bb5;--text3:#5a6e85;
+  --accent:#4a90d9;--accent2:#357abd;
+  --green:#48c774;--red:#e74c6f;--orange:#f0a832;
+  --radius:8px;--radius-sm:5px;
+}
+html{font-size:15px}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ═══ SHELL ═══ */
+.shell{display:flex;flex-direction:column;height:100vh}
+
+/* ═══ TOP BAR ═══ */
+.top-bar{background:var(--surface);border-bottom:1px solid var(--surface3);padding:10px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+.top-bar .logo{display:flex;align-items:center;gap:11px}
+.top-bar .logo svg{width:30px;height:30px;flex-shrink:0}
+.top-bar .logo h1{font-size:.92rem;font-weight:700;color:#fff;letter-spacing:.2px}
+.top-bar .logo span{display:block;font-size:.58rem;color:var(--text3);font-weight:400;letter-spacing:.7px;margin-top:2px}
+.top-bar .actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{padding:6px 13px;border:1px solid var(--surface3);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text);font-size:.7rem;font-weight:600;cursor:pointer;transition:all .17s;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn.btn-gold{background:var(--gold);border-color:var(--gold);color:#0c1520}
+.btn.btn-gold:hover{background:var(--gold2);border-color:var(--gold2)}
+.btn.btn-danger{border-color:var(--red);color:var(--red)}
+.btn.btn-danger:hover{background:var(--red);color:#fff}
+
+/* ═══ NAV TABS ═══ */
+.nav-strip{background:var(--surface);border-bottom:1px solid var(--surface3);padding:0 22px;display:flex;gap:2px;align-items:center;flex-shrink:0}
+.nav-tab{padding:9px 18px;font-size:.7rem;font-weight:600;color:var(--text3);cursor:pointer;border:none;background:none;letter-spacing:.5px;text-transform:uppercase;border-bottom:2px solid transparent;transition:all .2s}
+.nav-tab:hover{color:var(--text);border-color:var(--surface3)}
+.nav-tab.active{color:var(--gold);border-color:var(--gold)}
+.nav-sep{width:1px;height:16px;background:var(--surface3);margin:0 4px}
+
+/* ═══ SELECTOR BAR ═══ */
+.selector-bar{background:var(--surface);border-bottom:1px solid var(--surface3);padding:8px 22px;display:flex;align-items:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.selector-bar label{font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.sel-group{display:flex;align-items:center;gap:6px}
+.sel-group select{background:var(--surface2);border:1px solid var(--surface3);color:var(--text);padding:5px 28px 5px 10px;border-radius:var(--radius-sm);font-size:.76rem;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a9bb5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.sel-group select:focus{border-color:var(--gold)}
+
+/* Month pills */
+.month-pills{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.mpill{padding:4px 10px;border-radius:12px;font-size:.67rem;font-weight:600;cursor:pointer;transition:all .17s;background:var(--surface2);color:var(--text3);border:1px solid transparent;letter-spacing:.3px;user-select:none}
+.mpill:hover{color:var(--text);border-color:var(--surface3)}
+.mpill.active{background:var(--gold);color:#0c1520;border-color:var(--gold)}
+.mpill.has-data{border-color:var(--accent);color:var(--accent)}
+.mpill.has-data.active{background:var(--gold);color:#0c1520;border-color:var(--gold)}
+.mpill.future{opacity:.45}
+
+/* ═══ SCROLLABLE CONTENT ═══ */
+.content{flex:1;overflow-y:auto;padding:18px 22px}
+
+/* ═══ PROFILE ROW ═══ */
+.profile-row{display:grid;grid-template-columns:1.6fr 1fr 1fr .7fr;gap:12px;margin-bottom:16px}
+.pf-card{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:10px 14px}
+.pf-card label{font-size:.59rem;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.pf-card input,.pf-card .month-val{margin-top:4px;width:100%;background:var(--surface2);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:5px 9px;color:#fff;font-size:.78rem;outline:none}
+.pf-card input:focus{border-color:var(--gold)}
+.pf-card .month-val{background:none;border:none;padding-left:0;color:var(--gold);font-weight:700;font-size:.84rem}
+
+/* ═══ DAILY TABLE ═══ */
+.daily-wrap{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+.sec-head{padding:9px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--surface3)}
+.sec-head h3{font-size:.7rem;color:var(--gold);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.7rem}
+thead th{background:var(--surface2);color:var(--gold);padding:6px 4px;text-align:center;font-weight:600;white-space:nowrap;border-bottom:1px solid var(--surface3);letter-spacing:.2px;font-size:.62rem;text-transform:uppercase;position:sticky;top:0;z-index:2}
+thead th:nth-child(1){position:sticky;left:0;z-index:3;min-width:36px}
+thead th:nth-child(2){position:sticky;left:36px;z-index:3;min-width:38px}
+tbody td{padding:2px 3px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;border-right:1px solid rgba(255,255,255,.025)}
+tbody td:nth-child(1){position:sticky;left:0;background:var(--surface);z-index:1;text-align:left;padding-left:7px;font-weight:600;color:var(--text2);font-size:.69rem;min-width:36px}
+tbody td:nth-child(2){position:sticky;left:36px;background:var(--surface);z-index:1;font-weight:700;color:var(--accent);min-width:38px}
+tr.sunday td:nth-child(1){color:var(--red)!important;font-weight:700}
+tr.sunday td:nth-child(2){color:var(--red)!important}
+tr.sunday{background:rgba(231,76,111,.035)}
+input.di{width:100%;min-width:44px;background:transparent;border:none;text-align:center;color:var(--text);font-size:.71rem;padding:3px 2px;outline:none}
+input.di:focus{background:rgba(212,168,67,.07);border-radius:3px}
+input.di::placeholder{color:var(--text3);opacity:.35}
+input.di::-webkit-inner-spin-button,input.di::-webkit-outer-spin-button{-webkit-appearance:none}
+input.di{-moz-appearance:textfield}
+input.di.txt{text-align:left;min-width:100px}
+tr.total-row td{background:var(--surface2)!important;font-weight:700;color:var(--gold);padding:5px 4px!important;font-size:.71rem;border-top:1px solid var(--surface3)}
+tr.total-row td:nth-child(1){color:var(--text2)}
+
+/* ═══ BOTTOM GRID ═══ */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.card{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);overflow:hidden}
+.card .sec-head h3{font-size:.67rem}
+.card-body{padding:12px 14px}
+
+/* Extra items */
+.extra-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 14px}
+.ex-row{display:flex;align-items:center;gap:6px;padding:2px 0}
+.ex-row label{font-size:.64rem;color:var(--text2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex-row input{width:52px;background:var(--surface2);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:3px 5px;font-size:.69rem;text-align:center;color:var(--text);outline:none}
+.ex-row input:focus{border-color:var(--gold)}
+
+/* Planning */
+.plan-head{font-size:.62rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 5px;padding-bottom:3px;border-bottom:1px solid var(--surface3)}
+.plan-head:first-child{margin-top:0}
+.pr{display:flex;gap:6px;align-items:center;padding:2px 0}
+.pr label{font-size:.63rem;color:var(--text3);flex:0 0 auto;min-width:88px}
+.pr input,.pr textarea{flex:1;background:var(--surface2);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:3px 7px;font-size:.67rem;color:var(--text);outline:none;font-family:inherit}
+.pr input:focus,.pr textarea:focus{border-color:var(--gold)}
+.pr textarea{resize:vertical;min-height:32px;padding:4px 7px}
+
+/* Completion */
+.comp-row{display:flex;align-items:center;gap:10px;margin-top:10px;padding:7px 10px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--surface3)}
+.comp-row label{font-size:.67rem;font-weight:600;color:var(--text);flex:1}
+.comp-row input{width:60px;background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:3px 8px;font-size:.73rem;text-align:center;font-weight:700;color:var(--gold);outline:none}
+.comp-row input:focus{border-color:var(--gold)}
+
+/* Shepherd */
+.shep{background:var(--surface2);border-radius:var(--radius);padding:9px 11px;margin-top:10px;border:1px solid var(--surface3)}
+.shep label{font-size:.62rem;color:var(--text3);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.shep textarea{width:100%;background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius-sm);padding:5px 8px;font-size:.69rem;color:var(--text);min-height:42px;outline:none;resize:vertical;font-family:inherit}
+.shep textarea:focus{border-color:var(--gold)}
+
+/* Dua */
+.dua-box{background:linear-gradient(135deg,rgba(212,168,67,.06),rgba(74,144,217,.04));border:1px solid rgba(212,168,67,.2);border-radius:var(--radius);padding:14px;margin-top:10px;text-align:center}
+.dua-box .dua-t{font-size:.62rem;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.dua-box .dua-ar{font-size:.8rem;color:var(--gold);direction:rtl;line-height:1.7}
+.dua-box .dua-bn{font-size:.65rem;color:var(--text2);margin-top:6px;line-height:1.5}
+
+/* ═══ DASHBOARD ═══ */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.dash-kpi{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden}
+.dash-kpi::before{content:'';position:absolute;top:-18px;right:-18px;width:70px;height:70px;border-radius:50%;background:var(--gold-lo);pointer-events:none}
+.dash-kpi .kpi-label{font-size:.59rem;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:6px;position:relative}
+.dash-kpi .kpi-val{font-size:1.55rem;font-weight:700;color:var(--gold);position:relative}
+.dash-kpi .kpi-sub{font-size:.61rem;color:var(--text3);margin-top:3px;position:relative}
+.dash-kpi .kpi-bar{width:100%;height:3px;background:var(--surface2);border-radius:2px;margin-top:9px;overflow:hidden;position:relative}
+.dash-kpi .kpi-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .5s .1s}
+
+/* Dashboard rows */
+.dash-row{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-bottom:18px}
+.dash-row.full{grid-template-columns:1fr}
+.chart-card{background:var(--surface);border:1px solid var(--surface3);border-radius:var(--radius);overflow:hidden}
+.chart-card .sec-head{padding:10px 14px}
+canvas{display:block;width:100%}
+
+/* Year pills inside dashboard */
+.dash-year-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.dash-year-row label{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.ypill{padding:4px 11px;border-radius:12px;font-size:.68rem;font-weight:600;cursor:pointer;background:var(--surface2);color:var(--text3);border:1px solid transparent;transition:all .17s}
+.ypill:hover{border-color:var(--surface3);color:var(--text)}
+.ypill.active{background:var(--gold);color:#0c1520;border-color:var(--gold)}
+.ypill.has-data{border-color:var(--accent);color:var(--accent)}
+.ypill.has-data.active{background:var(--gold);color:#0c1520;border-color:var(--gold)}
+
+/* Summary table */
+.sum-table{width:100%;border-collapse:collapse;font-size:.67rem}
+.sum-table thead th{background:var(--surface2);color:var(--gold);padding:6px 8px;text-align:center;font-size:.59rem;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--surface3);white-space:nowrap}
+.sum-table thead th:first-child{text-align:left}
+.sum-table tbody td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.045);color:var(--text2);text-align:center}
+.sum-table tbody td:first-child{text-align:left;color:var(--text);font-weight:600}
+.sum-table tbody tr:hover{background:rgba(255,255,255,.025)}
+.sum-table .tot{color:var(--gold);font-weight:700}
+.sum-table .row-total{background:var(--surface2)}
+.sum-table .row-total td{color:var(--gold);font-weight:700}
+.sum-table .row-avg{background:var(--surface2)}
+.sum-table .row-avg td{color:var(--accent);font-weight:600}
+
+/* Heatmap */
+.heatmap-wrap{padding:12px 14px;overflow-x:auto}
+.heatmap-grid{display:flex;gap:5px}
+.hm-labels{display:flex;flex-direction:column;gap:2px;padding-top:14px;flex-shrink:0}
+.hm-labels div{font-size:.56rem;color:var(--text3);height:11px;line-height:11px;text-align:right;padding-right:5px;white-space:nowrap}
+.hm-cols{display:flex;flex-direction:column;gap:2px;flex:1}
+.hm-header{display:flex;gap:2px;margin-bottom:2px}
+.hm-header div{flex:1;min-width:0;font-size:.5rem;color:var(--text3);text-align:center}
+.hm-row{display:flex;gap:2px}
+.hm-cell{flex:1;min-width:0;height:11px;border-radius:2px}
+.hm-legend{display:flex;align-items:center;gap:6px;margin-top:8px;justify-content:flex-end}
+.hm-legend span{font-size:.58rem;color:var(--text3)}
+.hm-swatch{width:11px;height:11px;border-radius:2px}
+
+/* Toast */
+.toast{position:fixed;bottom:22px;right:22px;background:#162233;border:1px solid var(--gold);color:var(--text);padding:9px 18px;border-radius:var(--radius);font-size:.73rem;opacity:0;transform:translateY(16px);transition:all .26s;z-index:999;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.45)}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:960px){.bottom-grid{grid-template-columns:1fr 1fr}.dash-grid{grid-template-columns:1fr 1fr}.dash-row{grid-template-columns:1fr}.profile-row{grid-template-columns:1fr 1fr}}
+@media(max-width:580px){.bottom-grid{grid-template-columns:1fr}.dash-grid{grid-template-columns:1fr 1fr}.profile-row{grid-template-columns:1fr}.month-pills{margin-left:0}.selector-bar{gap:10px}.top-bar{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="logo">
+    <svg viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="14" stroke="#d4a843" stroke-width="1.4"/><path d="M15 4.5a10.5 10.5 0 1 1 6.6 19.6" stroke="#d4a843" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="15" cy="15" r="2.6" fill="#d4a843"/></svg>
+    <div><h1>MUNA Personal Development</h1><span>بسم الله الرحمن الرحيم</span></div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-gold" onclick="exportData()">⬇ Export</button>
+    <button class="btn" onclick="document.getElementById('impFile').click()">⬆ Import</button>
+    <input type="file" id="impFile" accept=".json" style="display:none" onchange="importData(event)"/>
+    <button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-strip">
+  <button class="nav-tab active" data-tab="report" onclick="switchTab('report')">📋 Report</button>
+  <div class="nav-sep"></div>
+  <button class="nav-tab" data-tab="dashboard" onclick="switchTab('dashboard')">📊 Dashboard</button>
+</div>
+
+<!-- SELECTOR BAR -->
+<div class="selector-bar" id="selectorBar">
+  <div class="sel-group">
+    <label>Year</label>
+    <select id="yearSel" onchange="onYearChange()"></select>
+  </div>
+  <div class="month-pills" id="monthPills"></div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="content"></div>
+
+</div><!-- /shell -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════════════
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS=[31,28,31,30,31,30,31,31,30,31,30,31];
+const COLS=[
+  {k:'quran',l:"Qur'an"},{k:'hadith',l:'Hadith'},{k:'istudy',l:'I-Study'},
+  {k:'salat',l:'Salat'},{k:'gstudy',l:'G.Study'},{k:'dawah',l:'Dawah'},
+  {k:'contact',l:'Contact'},{k:'meeting',l:'Meeting'},{k:'time',l:'Time'},
+  {k:'supervise',l:'Supervise'},{k:'eval',l:'Evaluation'},{k:'comments',l:'Comments',t:'txt'}
+];
+const NUM_COLS=COLS.filter(c=>!c.t);
+const EXTRAS=[
+  '12. MUNA Dues','13. Family Sitting','14. Dawah Friend','15. Supporter Increase',
+  '16. Associate Increase','17. Preamble Distribution','18. Book Distribution',
+  '19. Cassette/CD Distribution','20. Flyer Distribution','21. Dawah Gift',
+  '22. Calendar','23. Magazine/Bulletin','24. Professional Support','25. Housing Support',
+  '26. Hospital Visit','27. Relative Support','28. Inter-faith Visit','29. Relief Activity',
+  '30. Ride Support','31. Funeral','32. Family Mourning Visit','33. Family Counseling',
+  '34. Neighbor Support','35. Education Sitting'
+];
+const PLAN_FIELDS=[
+  {k:'quran',l:'Quran Study'},{k:'books',l:'Books / Tafsir'},{k:'surah',l:'Surah / Ayat'},
+  {k:'darsh',l:'Darsh Ready'},{k:'memorize',l:'Memorize Surah/Ayat'},
+  {k:'hadith',l:'Hadith Study'},{k:'booksName',l:'Books Name'},
+  {k:'subject',l:'Subject'},{k:'darsh2',l:'Darsh Ready (2)'},
+  {k:'memorize2',l:'Memorize (2)'},{k:'study',l:'Study: Islamic / General / Online'}
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const NOW=new Date();
+let curYear=NOW.getFullYear();
+let curMonth=NOW.getMonth();
+let curTab='report';
+let dashYear=NOW.getFullYear();
+let store={};
+
+// ═══════════════════════════════════════════════════════════
+// INDEXEDDB
+// ═══════════════════════════════════════════════════════════
+const DB_NAME='MunaReportDB', DB_VER=3, STORE_NAME='reports';
+let db=null;
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains(STORE_NAME)) d.createObjectStore(STORE_NAME);
+    };
+    req.onsuccess=e=>{db=e.target.result;res(db)};
+    req.onerror=e=>rej(e);
+  });
+}
+function dbGet(key){
+  return new Promise(res=>{
+    if(!db)return res(null);
+    const r=db.transaction(STORE_NAME,'readonly').objectStore(STORE_NAME).get(key);
+    r.onsuccess=()=>res(r.result||null);
+    r.onerror=()=>res(null);
+  });
+}
+function dbPut(key,val){
+  if(!db)return;
+  db.transaction(STORE_NAME,'readwrite').objectStore(STORE_NAME).put(val,key);
+}
+function dbGetAllKeys(){
+  return new Promise(res=>{
+    if(!db)return res([]);
+    const r=db.transaction(STORE_NAME,'readonly').objectStore(STORE_NAME).getAllKeys();
+    r.onsuccess=()=>res(r.result||[]);
+    r.onerror=()=>res([]);
+  });
+}
+function dbClear(){
+  return new Promise(res=>{
+    if(!db)return res();
+    const r=db.transaction(STORE_NAME,'readwrite').objectStore(STORE_NAME).clear();
+    r.onsuccess=()=>res();r.onerror=()=>res();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// DATA HELPERS
+// ═══════════════════════════════════════════════════════════
+function makeKey(y,m){return y+'-'+String(m+1).padStart(2,'0')}
+
+function emptyMonth(){
+  const r={
+    profile:{name:'',chapter:'',phone:''},
+    daily:{},extras:{},
+    planning:{draft:{},completion:{}},
+    dawahDev:{supporterPlan:'',associatePlan:'',others:''},
+    completionPct:'',shepherd:''
+  };
+  PLAN_FIELDS.forEach(f=>{r.planning.draft[f.k]='';r.planning.completion[f.k]=''});
+  EXTRAS.forEach((_,i)=>{r.extras[i]=''});
+  return r;
+}
+
+function ensureDays(rec,mi){
+  for(let d=1;d<=DAYS[mi];d++){
+    if(!rec.daily[d]) rec.daily[d]={};
+    COLS.forEach(c=>{if(rec.daily[d][c.k]==null) rec.daily[d][c.k]=''});
+  }
+}
+
+async function getMonth(y,m){
+  const key=makeKey(y,m);
+  if(store[key]) return store[key];
+  const dbRec=await dbGet(key);
+  const rec=dbRec||emptyMonth();
+  ensureDays(rec,m);
+  store[key]=rec;
+  return rec;
+}
+
+function saveMonth(y,m){
+  const key=makeKey(y,m);
+  if(store[key]) dbPut(key,store[key]);
+}
+
+function hasData(rec){
+  if(!rec) return false;
+  if(rec.profile&&rec.profile.name) return true;
+  if(rec.daily){
+    for(const d of Object.values(rec.daily)){
+      for(const c of NUM_COLS){if(Number(d[c.k])>0) return true}
+      if(d.comments&&d.comments.trim()) return true;
+    }
+  }
+  if(rec.extras) for(const v of Object.values(rec.extras)){if(Number(v)>0) return true}
+  return false;
+}
+
+function getStoredYears(){
+  const years=new Set();
+  Object.keys(store).forEach(k=>{if(store[k]&&hasData(store[k])) years.add(Number(k.split('-')[0]))});
+  return years;
+}
+
+function computeMonthTotals(rec,mi){
+  const t={};
+  NUM_COLS.forEach(c=>{
+    let s=0;
+    for(let d=1;d<=DAYS[mi];d++){const v=Number(rec.daily[d]&&rec.daily[d][c.k]);if(!isNaN(v))s+=v}
+    t[c.k]=s;
+  });
+  let et=0;
+  if(rec.extras) Object.values(rec.extras).forEach(v=>{const n=Number(v);if(!isNaN(n))et+=n});
+  t._extras=et;
+  return t;
+}
+
+// ═══════════════════════════════════════════════════════════
+// SELECTORS
+// ═══════════════════════════════════════════════════════════
+function buildYearSelect(){
+  const sel=document.getElementById('yearSel');
+  sel.innerHTML='';
+  for(let y=2020;y<=NOW.getFullYear()+2;y++){
+    sel.innerHTML+=`<option value="${y}"${y===curYear?' selected':''}>  ${y}</option>`;
+  }
+}
+
+function onYearChange(){
+  curYear=Number(document.getElementById('yearSel').value);
+  curMonth=(curYear===NOW.getFullYear())?NOW.getMonth():0;
+  renderPills();renderContent();
+}
+
+function renderPills(){
+  const c=document.getElementById('monthPills');
+  c.innerHTML=MONTHS.map((m,i)=>{
+    const key=makeKey(curYear,i);
+    const hasDat=store[key]&&hasData(store[key]);
+    const isFuture=(curYear===NOW.getFullYear())&&(i>NOW.getMonth());
+    let cls='mpill';
+    if(hasDat) cls+=' has-data';
+    if(isFuture) cls+=' future';
+    if(i===curMonth) cls+=' active';
+    return `<div class="${cls}" onclick="switchMonth(${i})">${m.slice(0,3)}</div>`;
+  }).join('');
+}
+
+function switchMonth(m){curMonth=m;renderPills();renderContent()}
+
+// ═══════════════════════════════════════════════════════════
+// TAB / DISPATCH
+// ═══════════════════════════════════════════════════════════
+function switchTab(t){
+  curTab=t;
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.toggle('active',el.dataset.tab===t));
+  document.getElementById('selectorBar').style.display=(t==='report'?'flex':'none');
+  renderContent();
+}
+
+async function renderContent(){
+  if(curTab==='report') await renderReport();
+  else await renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER REPORT
+// ═══════════════════════════════════════════════════════════
+async function renderReport(){
+  const rec=await getMonth(curYear,curMonth);
+  ensureDays(rec,curMonth);
+  const mi=curMonth, yr=curYear;
+  let h='';
+
+  // Profile
+  h+=`<div class="profile-row">
+    <div class="pf-card"><label>Name</label><input type="text" value="${esc(rec.profile.name)}" oninput="setP('name',this.value)"/></div>
+    <div class="pf-card"><label>Chapter</label><input type="text" value="${esc(rec.profile.chapter)}" oninput="setP('chapter',this.value)"/></div>
+    <div class="pf-card"><label>Phone #</label><input type="text" value="${esc(rec.profile.phone)}" oninput="setP('phone',this.value)"/></div>
+    <div class="pf-card"><label>Month &amp; Year</label><div class="month-val">${MONTHS[mi]} ${yr}</div></div>
+  </div>`;
+
+  // Daily Table
+  h+=`<div class="daily-wrap"><div class="sec-head"><h3>📅 Daily Tracking</h3></div><div class="tbl-scroll"><table>`;
+  h+=`<thead><tr><th>Day</th><th>#</th>`;
+  COLS.forEach(c=>{h+=`<th>${c.l}</th>`});
+  h+=`</tr></thead><tbody>`;
+
+  for(let day=1;day<=DAYS[mi];day++){
+    const isSun=new Date(yr,mi,day).getDay()===0;
+    h+=`<tr class="${isSun?'sunday':''}">`;
+    h+=`<td>${isSun?'SUN':''}</td><td>${day}</td>`;
+    COLS.forEach(col=>{
+      const val=rec.daily[day][col.k]||'';
+      if(col.t==='txt') h+=`<td><input type="text" class="di txt" value="${esc(val)}" oninput="setD(${day},'${col.k}',this.value)"/></td>`;
+      else h+=`<td><input type="number" class="di" min="0" value="${val}" placeholder="·" oninput="setD(${day},'${col.k}',this.value)"/></td>`;
+    });
+    h+=`</tr>`;
+  }
+
+  // Totals row
+  h+=`<tr class="total-row"><td>Total</td><td>—</td>`;
+  COLS.forEach(col=>{
+    if(col.t==='txt'){h+=`<td>—</td>`}
+    else{let s=0;for(let d=1;d<=DAYS[mi];d++){const v=Number(rec.daily[d][col.k]);if(!isNaN(v))s+=v}h+=`<td>${s}</td>`}
+  });
+  h+=`</tr></tbody></table></div></div>`;
+
+  // Bottom grid
+  h+=`<div class="bottom-grid">`;
+
+  // Card 1: Additional Report
+  h+=`<div class="card"><div class="sec-head"><h3>📋 Additional Report</h3></div><div class="card-body"><div class="extra-grid">`;
+  EXTRAS.forEach((item,idx)=>{h+=`<div class="ex-row"><label>${item}</label><input type="number" min="0" value="${rec.extras[idx]||''}" oninput="setE(${idx},this.value)"/></div>`});
+  h+=`</div></div></div>`;
+
+  // Card 2: Planning
+  h+=`<div class="card"><div class="sec-head"><h3>📑 Monthly Planning</h3></div><div class="card-body">`;
+  h+=`<div class="plan-head">📝 Draft</div>`;
+  PLAN_FIELDS.forEach(f=>{h+=`<div class="pr"><label>${f.l}</label><input type="text" value="${esc(rec.planning.draft[f.k]||'')}" oninput="setPl('draft','${f.k}',this.value)"/></div>`});
+  h+=`<div class="plan-head" style="margin-top:14px">✅ Completion</div>`;
+  PLAN_FIELDS.forEach(f=>{h+=`<div class="pr"><label>${f.l}</label><input type="text" value="${esc(rec.planning.completion[f.k]||'')}" oninput="setPl('completion','${f.k}',this.value)"/></div>`});
+  h+=`</div></div>`;
+
+  // Card 3: Dawah + Shepherd
+  h+=`<div class="card"><div class="sec-head"><h3>🌱 Dawah &amp; Development</h3></div><div class="card-body">`;
+  h+=`<div class="plan-head">Dawah Work / Associate Development</div>`;
+  [{k:'supporterPlan',l:'Supporter Plan'},{k:'associatePlan',l:'Associate Plan'},{k:'others',l:'Others'}].forEach(f=>{
+    h+=`<div class="pr"><label>${f.l}</label><textarea rows="2" oninput="setDw('${f.k}',this.value)">${esc(rec.dawahDev[f.k]||'')}</textarea></div>`;
+  });
+  h+=`<div class="comp-row"><label>📊 Monthly Planning Completion</label><input type="text" value="${rec.completionPct||''}" placeholder="%" oninput="setCP(this.value)"/></div>`;
+  h+=`<div class="shep"><label>💬 Shepherd / MUNA Sitting Comments</label><textarea rows="3" oninput="setSh(this.value)">${esc(rec.shepherd||'')}</textarea></div>`;
+  if(mi===11){
+    h+=`<div class="dua-box"><div class="dua-t">🌙 Dua Memory — December</div>
+      <div class="dua-ar">اللَّهُمَّ رَبَّنَا لَكَ الْحَمْدُ مِلْءَ السَّمَوَاتِ وَالأَرَضِينَ وَمِلْءَ مَا بَيْنَهُمَا وَمِلْءَ مَا شِئْتَ مِنْ شَيْءٍ بَعْدُ</div>
+      <div class="dua-bn">হে আল্লাহ, আমার প্রভু! আকাশমণ্ডলী ও সম্পূর্ণ জগৎসমূহ এবং উভয়ের মাঝে যা কিছু আছে, সমস্ত কিছু পরিপূর্ণ পরিমাণ তোমার প্রশংসা এবং তুমি যা আকাঙ্ক্ষা কর সেটাও পরিপূর্ণ পরিমাণ তোমার প্রশংসা</div></div>`;
+  }
+  h+=`</div></div>`;
+  h+=`</div>`;
+
+  document.getElementById('content').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════════
+// REPORT SETTERS
+// ═══════════════════════════════════════════════════════════
+function setP(k,v){store[makeKey(curYear,curMonth)].profile[k]=v;saveMonth(curYear,curMonth);renderPills()}
+function setD(day,k,v){store[makeKey(curYear,curMonth)].daily[day][k]=v;saveMonth(curYear,curMonth);renderPills()}
+function setE(idx,v){store[makeKey(curYear,curMonth)].extras[idx]=v;saveMonth(curYear,curMonth);renderPills()}
+function setPl(phase,k,v){store[makeKey(curYear,curMonth)].planning[phase][k]=v;saveMonth(curYear,curMonth)}
+function setDw(k,v){store[makeKey(curYear,curMonth)].dawahDev[k]=v;saveMonth(curYear,curMonth)}
+function setCP(v){store[makeKey(curYear,curMonth)].completionPct=v;saveMonth(curYear,curMonth)}
+function setSh(v){store[makeKey(curYear,curMonth)].shepherd=v;saveMonth(curYear,curMonth)}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER DASHBOARD
+// ═══════════════════════════════════════════════════════════
+async function renderDashboard(){
+  const storedYears=getStoredYears();
+  let h='';
+
+  // Year pills
+  h+=`<div class="dash-year-row"><label>View Year</label>`;
+  for(let y=2020;y<=NOW.getFullYear()+2;y++){
+    let cls='ypill';
+    if(storedYears.has(y)) cls+=' has-data';
+    if(y===dashYear) cls+=' active';
+    h+=`<div class="${cls}" onclick="setDashYear(${y})">${y}</div>`;
+  }
+  h+=`</div>`;
+
+  // Load 12 months
+  const monthlyData=[];
+  for(let m=0;m<12;m++) monthlyData.push(await getMonth(dashYear,m));
+  const allTotals=monthlyData.map((rec,i)=>computeMonthTotals(rec,i));
+
+  // Aggregates
+  const yearlyTot={};
+  NUM_COLS.forEach(c=>{yearlyTot[c.k]=allTotals.reduce((s,t)=>s+(t[c.k]||0),0)});
+  yearlyTot._extras=allTotals.reduce((s,t)=>s+(t._extras||0),0);
+
+  const activeMonths=allTotals.filter(t=>NUM_COLS.some(c=>t[c.k]>0)||t._extras>0).length||1;
+  const grandTotal=NUM_COLS.reduce((s,c)=>s+yearlyTot[c.k],0);
+  const grandWithExtras=grandTotal+yearlyTot._extras;
+
+  let bestMi=0,bestVal=0;
+  allTotals.forEach((t,i)=>{const sum=NUM_COLS.reduce((s,c)=>s+(t[c.k]||0),0)+t._extras;if(sum>bestVal){bestVal=sum;bestMi=i}});
+
+  let topCol=NUM_COLS[0];
+  NUM_COLS.forEach(c=>{if(yearlyTot[c.k]>yearlyTot[topCol.k])topCol=c});
+
+  const completionPcts=monthlyData.map(r=>Number(r.completionPct)||0).filter(v=>v>0);
+  const avgCompletion=completionPcts.length?completionPcts.reduce((a,b)=>a+b,0)/completionPcts.length:0;
+
+  // KPI Cards
+  h+=`<div class="dash-grid">
+    <div class="dash-kpi">
+      <div class="kpi-label">Total Activities</div>
+      <div class="kpi-val">${grandWithExtras.toLocaleString()}</div>
+      <div class="kpi-sub">Daily + Additional combined</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:100%"></div></div>
+    </div>
+    <div class="dash-kpi">
+      <div class="kpi-label">Active Months</div>
+      <div class="kpi-val">${activeMonths}<span style="font-size:.6rem;color:var(--text3)">/12</span></div>
+      <div class="kpi-sub">${dashYear} participation</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${(activeMonths/12)*100}%"></div></div>
+    </div>
+    <div class="dash-kpi">
+      <div class="kpi-label">Best Month</div>
+      <div class="kpi-val">${MONTHS[bestMi].slice(0,3)}</div>
+      <div class="kpi-sub">${bestVal.toLocaleString()} activities</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${grandWithExtras?((bestVal/grandWithExtras)*100).toFixed(0):0}%"></div></div>
+    </div>
+    <div class="dash-kpi">
+      <div class="kpi-label">Avg Completion</div>
+      <div class="kpi-val">${avgCompletion.toFixed(0)}%</div>
+      <div class="kpi-sub">Planning completion rate</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${Math.min(avgCompletion,100)}%"></div></div>
+    </div>
+  </div>`;
+
+  // Row 1: Bar + Heatmap
+  h+=`<div class="dash-row">
+    <div class="chart-card"><div class="sec-head"><h3>📊 Monthly Activity — ${dashYear}</h3></div><canvas id="cBar" height="210"></canvas></div>
+    <div class="chart-card"><div class="sec-head"><h3>🔥 Activity Heatmap</h3></div><div class="heatmap-wrap" id="heatmapWrap"></div></div>
+  </div>`;
+
+  // Row 2: Stacked
+  h+=`<div class="dash-row full">
+    <div class="chart-card"><div class="sec-head"><h3>📈 Top 5 Categories by Month</h3></div><canvas id="cStack" height="230"></canvas></div>
+  </div>`;
+
+  // Row 3: Multi-year line (only if >1 year has data)
+  if(storedYears.size>1){
+    h+=`<div class="dash-row full">
+      <div class="chart-card"><div class="sec-head"><h3>📉 Yearly Comparison</h3></div><canvas id="cLine" height="200"></canvas></div>
+    </div>`;
+  }
+
+  // Summary Table
+  h+=`<div class="chart-card" style="margin-bottom:18px"><div class="sec-head"><h3>📋 Monthly Summary — ${dashYear}</h3></div>`;
+  h+=`<div style="overflow-x:auto"><table class="sum-table"><thead><tr><th>Month</th>`;
+  NUM_COLS.forEach(c=>{h+=`<th>${c.l}</th>`});
+  h+=`<th>Extras</th><th style="color:#fff">Total</th></tr></thead><tbody>`;
+
+  allTotals.forEach((t,mi)=>{
+    const rowTot=NUM_COLS.reduce((s,c)=>s+(t[c.k]||0),0)+t._extras;
+    h+=`<tr><td>${MONTHS[mi]}${rowTot===0?' <span style="color:var(--text3);font-size:.58rem">(empty)</span>':''}</td>`;
+    NUM_COLS.forEach(c=>{h+=`<td>${t[c.k]||0}</td>`});
+    h+=`<td class="tot">${t._extras||0}</td><td class="tot">${rowTot}</td></tr>`;
+  });
+
+  // Totals row
+  h+=`<tr class="row-total"><td>YEARLY TOTAL</td>`;
+  NUM_COLS.forEach(c=>{h+=`<td>${yearlyTot[c.k]||0}</td>`});
+  h+=`<td>${yearlyTot._extras||0}</td><td>${grandWithExtras}</td></tr>`;
+
+  // Average row
+  h+=`<tr class="row-avg"><td>MONTHLY AVG</td>`;
+  NUM_COLS.forEach(c=>{h+=`<td>${(yearlyTot[c.k]||0)/activeMonths|0}</td>`});
+  h+=`<td>${yearlyTot._extras/activeMonths|0}</td><td>${grandWithExtras/activeMonths|0}</td></tr>`;
+
+  h+=`</tbody></table></div></div>`;
+
+  document.getElementById('content').innerHTML=h;
+
+  // Draw charts
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      drawBarChart(allTotals);
+      drawStackChart(allTotals);
+      drawHeatmap(monthlyData);
+      if(storedYears.size>1) drawLineChart(storedYears);
+    },30);
+  });
+}
+
+function setDashYear(y){dashYear=y;renderDashboard()}
+
+// ═══════════════════════════════════════════════════════════
+// CANVAS SETUP
+// ═══════════════════════════════════════════════════════════
+function setupCanvas(id){
+  const canvas=document.getElementById(id);
+  if(!canvas) return null;
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  const declH=Number(canvas.getAttribute('height')||220);
+  canvas.width=rect.width*dpr;
+  canvas.height=declH*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  canvas.style.height=declH+'px';
+  return{ctx,w:rect.width,h:declH};
+}
+
+// ═══════════════════════════════════════════════════════════
+// BAR CHART
+// ═══════════════════════════════════════════════════════════
+function drawBarChart(allTotals){
+  const r=setupCanvas('cBar');if(!r)return;
+  const{ctx,w,h}=r;
+  ctx.clearRect(0,0,w,h);
+  const pad={t:16,r:12,b:28,l:40};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  const barW=cw/12;
+  const vals=allTotals.map(t=>NUM_COLS.reduce((s,c)=>s+(t[c.k]||0),0)+t._extras);
+  const maxV=Math.max(...vals,1);
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ch*(1-i/4);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+    ctx.fillStyle='rgba(138,155,181,.55)';ctx.font='9px Segoe UI';ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(Math.round(maxV*i/4),pad.l-5,y);
+  }
+
+  // Bars
+  vals.forEach((v,i)=>{
+    const x=pad.l+i*barW+barW*.16;
+    const bw=barW*.68;
+    const bh=Math.max((v/maxV)*ch, v>0?2:0);
+    const y=pad.t+ch-bh;
+    if(v>0){
+      const grad=ctx.createLinearGradient(0,y,0,pad.t+ch);
+      grad.addColorStop(0,'#d4a843');grad.addColorStop(1,'rgba(212,168,67,.25)');
+      ctx.fillStyle=grad;
+      const cr=Math.min(3,bh/2);
+      ctx.beginPath();
+      ctx.moveTo(x+cr,y);ctx.lineTo(x+bw-cr,y);
+      ctx.quadraticCurveTo(x+bw,y,x+bw,y+cr);
+      ctx.lineTo(x+bw,pad.t+ch);ctx.lineTo(x,pad.t+ch);
+      ctx.lineTo(x,y+cr);ctx.quadraticCurveTo(x,y,x+cr,y);
+      ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='bold 9px Segoe UI';ctx.textAlign='center';ctx.textBaseline='bottom';
+      ctx.fillText(v,x+bw/2,y-3);
+    } else {
+      ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(x,pad.t+ch-2,bw,2);
+    }
+  });
+
+  // X labels
+  ctx.fillStyle='rgba(138,155,181,.6)';ctx.font='9px Segoe UI';ctx.textAlign='center';ctx.textBaseline='top';
+  vals.forEach((_,i)=>{ctx.fillText(MONTHS[i].slice(0,3),pad.l+i*barW+barW/2,h-pad.b+4)});
+}
+
+// ═══════════════════════════════════════════════════════════
+// STACKED CHART
+// ═══════════════════════════════════════════════════════════
+function drawStackChart(allTotals){
+  const r=setupCanvas('cStack');if(!r)return;
+  const{ctx,w,h}=r;
+  ctx.clearRect(0,0,w,h);
+  const pad={t:22,r:12,b:28,l:40};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  const barW=cw/12;
+
+  const sorted=[...NUM_COLS].sort((a,b)=>{
+    return allTotals.reduce((s,t)=>s+(t[b.k]||0),0)-allTotals.reduce((s,t)=>s+(t[a.k]||0),0);
+  });
+  const topCols=sorted.slice(0,5);
+  const colors=['#d4a843','#4a90d9','#48c774','#e74c6f','#f0a832'];
+  const stackVals=allTotals.map(t=>topCols.reduce((s,c)=>s+(t[c.k]||0),0));
+  const maxV=Math.max(...stackVals,1);
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ch*(1-i/4);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+    ctx.fillStyle='rgba(138,155,181,.5)';ctx.font='9px Segoe UI';ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(Math.round(maxV*i/4),pad.l-5,y);
+  }
+
+  // Stacked bars
+  allTotals.forEach((t,i)=>{
+    const x=pad.l+i*barW+barW*.16;
+    const bw=barW*.68;
+    let yOff=pad.t+ch;
+    topCols.forEach((c,ci)=>{
+      const v=t[c.k]||0;if(!v)return;
+      const bh=(v/maxV)*ch;
+      yOff-=bh;
+      ctx.fillStyle=colors[ci];
+      ctx.fillRect(x,yOff,bw,bh);
+    });
+  });
+
+  // X labels
+  ctx.fillStyle='rgba(138,155,181,.6)';ctx.font='9px Segoe UI';ctx.textAlign='center';ctx.textBaseline='top';
+  allTotals.forEach((_,i)=>{ctx.fillText(MONTHS[i].slice(0,3),pad.l+i*barW+barW/2,h-pad.b+4)});
+
+  // Legend
+  let lx=pad.l;
+  topCols.forEach((c,ci)=>{
+    ctx.fillStyle=colors[ci];ctx.fillRect(lx,pad.t-16,9,9);
+    ctx.fillStyle='rgba(200,214,229,.75)';ctx.font='9px Segoe UI';ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.fillText(c.l,lx+13,pad.t-15);
+    lx+=c.l.length*5.4+28;
+    if(lx>w-100) lx=pad.l;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// LINE CHART — multi-year
+// ═══════════════════════════════════════════════════════════
+async function drawLineChart(storedYears){
+  const r=setupCanvas('cLine');if(!r)return;
+  const{ctx,w,h}=r;
+  ctx.clearRect(0,0,w,h);
+  const pad={t:18,r:14,b:28,l:44};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+
+  const years=[...storedYears].sort((a,b)=>a-b);
+  const seriesMap={};
+  for(const yr of years){
+    const totals=[];
+    for(let m=0;m<12;m++){
+      const rec=await getMonth(yr,m);
+      const t=computeMonthTotals(rec,m);
+      totals.push(NUM_COLS.reduce((s,c)=>s+(t[c.k]||0),0)+t._extras);
+    }
+    seriesMap[yr]=totals;
+  }
+
+  let maxV=1;
+  Object.values(seriesMap).forEach(arr=>{arr.forEach(v=>{if(v>maxV)maxV=v})});
+
+  const colors=['#d4a843','#4a90d9','#48c774','#e74c6f','#f0a832','#a78bfa'];
+  const slotW=cw/11;
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ch*(1-i/4);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+    ctx.fillStyle='rgba(138,155,181,.5)';ctx.font='9px Segoe UI';ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(Math.round(maxV*i/4),pad.l-5,y);
+  }
+
+  // Lines & dots
+  years.forEach((yr,yi)=>{
+    const pts=seriesMap[yr];
+    const color=colors[yi%colors.length];
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineJoin='round';
+    ctx.beginPath();
+    pts.forEach((v,mi)=>{
+      const x=pad.l+mi*slotW;
+      const y=pad.t+ch*(1-v/maxV);
+      mi===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    // Dots
+    ctx.fillStyle=color;
+    pts.forEach((v,mi)=>{
+      if(v>0){
+        ctx.beginPath();ctx.arc(pad.l+mi*slotW,pad.t+ch*(1-v/maxV),3,0,Math.PI*2);ctx.fill();
+      }
+    });
+  });
+
+  // X labels
+  ctx.fillStyle='rgba(138,155,181,.6)';ctx.font='9px Segoe UI';ctx.textAlign='center';ctx.textBaseline='top';
+  MONTHS.forEach((m,i)=>{ctx.fillText(m.slice(0,3),pad.l+i*slotW,h-pad.b+4)});
+
+  // Legend
+  let lx=pad.l;
+  years.forEach((yr,yi)=>{
+    ctx.fillStyle=colors[yi%colors.length];ctx.fillRect(lx,pad.t-2,22,3);
+    ctx.fillStyle='rgba(200,214,229,.75)';ctx.font='9px Segoe UI';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(String(yr),lx+27,pad.t);
+    lx+=65;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// HEATMAP
+// ═══════════════════════════════════════════════════════════
+function drawHeatmap(monthlyData){
+  const wrap=document.getElementById('heatmapWrap');
+  if(!wrap)return;
+
+  let maxDay=1;
+  monthlyData.forEach((rec,mi)=>{
+    for(let d=1;d<=DAYS[mi];d++){
+      let s=0;NUM_COLS.forEach(c=>{const v=Number(rec.daily[d]&&rec.daily[d][c.k]);if(!isNaN(v))s+=v});
+      if(s>maxDay)maxDay=s;
+    }
+  });
+
+  let html='<div class="heatmap-grid">';
+  html+=`<div class="hm-labels">`;
+  MONTHS.forEach(m=>{html+=`<div>${m.slice(0,3)}</div>`});
+  html+='</div>';
+  html+=`<div class="hm-cols">`;
+  html+=`<div class="hm-header">`;
+  for(let d=1;d<=31;d++) html+=`<div>${d}</div>`;
+  html+='</div>';
+
+  MONTHS.forEach((m,mi)=>{
+    html+=`<div class="hm-row">`;
+    for(let d=1;d<=31;d++){
+      if(d>DAYS[mi]){html+=`<div class="hm-cell" style="background:transparent"></div>`;continue}
+      let s=0;NUM_COLS.forEach(c=>{const v=Number(monthlyData[mi].daily[d]&&monthlyData[mi].daily[d][c.k]);if(!isNaN(v))s+=v});
+      const intensity=s>0?Math.min(s/maxDay,1):0;
+      let bg;
+      if(intensity===0)       bg='var(--surface2)';
+      else if(intensity<.2)   bg='rgba(74,144,217,.25)';
+      else if(intensity<.4)   bg='rgba(74,144,217,.45)';
+      else if(intensity<.6)   bg='rgba(74,144,217,.65)';
+      else if(intensity<.8)   bg='rgba(212,168,67,.5)';
+      else                    bg='rgba(212,168,67,.85)';
+      html+=`<div class="hm-cell" style="background:${bg}" title="${MONTHS[mi]} ${d}: ${s} activities"></div>`;
+    }
+    html+='</div>';
+  });
+  html+='</div></div>';
+
+  html+=`<div class="hm-legend"><span>Less</span>`;
+  ['var(--surface2)','rgba(74,144,217,.3)','rgba(74,144,217,.55)','rgba(212,168,67,.45)','rgba(212,168,67,.85)'].forEach(c=>{
+    html+=`<div class="hm-swatch" style="background:${c}"></div>`;
+  });
+  html+=`<span>More</span></div>`;
+
+  wrap.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXPORT / IMPORT / CLEAR
+// ═══════════════════════════════════════════════════════════
+async function exportData(){
+  const allKeys=await dbGetAllKeys();
+  const out={};
+  for(const k of allKeys) out[k]=await dbGet(k);
+  Object.keys(store).forEach(k=>{out[k]=store[k]});
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`MUNA_Report_Export_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();URL.revokeObjectURL(a.href);
+  toast('✅ All data exported successfully');
+}
+
+async function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async function(ev){
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(typeof d!=='object'||d===null)throw new Error('Invalid format');
+      let count=0;
+      for(const[key,val] of Object.entries(d)){
+        if(/^\d{4}-\d{2}$/.test(key)){store[key]=val;dbPut(key,val);count++}
+      }
+      if(count===0)throw new Error('No valid month records found');
+      renderPills();await renderContent();
+      toast(`✅ Imported ${count} month record(s)`);
+    }catch(err){toast('❌ Import failed: '+err.message)}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+async function clearAll(){
+  if(!confirm('Delete ALL data for ALL years and months?\n\nThis cannot be undone.'))return;
+  await dbClear();store={};renderPills();await renderContent();
+  toast('🗑️ All data cleared');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOAST & ESCAPE
+// ═══════════════════════════════════════════════════════════
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function esc(s){if(s==null||s==='')return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+async function init(){
+  await openDB();
+  const keys=await dbGetAllKeys();
+  for(const k of keys) store[k]=await dbGet(k);
+  buildYearSelect();
+  renderPills();
+  await renderContent();
+}
+init();
+</script>
+</body>
+</html>
